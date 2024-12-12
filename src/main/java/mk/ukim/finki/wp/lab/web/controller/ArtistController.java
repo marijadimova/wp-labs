@@ -8,41 +8,34 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/artist")
 public class ArtistController {
-
-    private final ArtistService artistService;
     private final SongService songService;
+    private final ArtistService artistService;
 
-    public ArtistController(ArtistService artistService, SongService songService) {
-        this.artistService = artistService;
+    public ArtistController(SongService songService, ArtistService artistService) {
         this.songService = songService;
+        this.artistService = artistService;
     }
 
-    @GetMapping
-    public String listArtists(@RequestParam String trackId, Model model) {
-
-        List<Artist> artists = artistService.listArtists();
-        model.addAttribute("artists", artists);
-
-        model.addAttribute("songid", trackId);
-
+    @GetMapping("/{trackId}")
+    public String getArtistPage(@PathVariable String trackId,
+                                Model model){
+        model.addAttribute("artists",artistService.listArtists());
+        model.addAttribute("trackId",trackId);
         return "artistsList";
     }
-
-    @PostMapping("/add")
-    public String addArtistToSong(@RequestParam String trackId, @RequestParam Long artistId) {
-        Song song = songService.findByTrackId(trackId);
-        Artist artist = artistService.ArtistfindById(artistId);
-
-        if (song != null && artist != null) {
-            songService.addArtistToSong(artist, song);
-        }
-
-        return "redirect:/artist?trackId=" + trackId;
+    @PostMapping()
+    public String addArtist(
+            @RequestParam String trackId,
+            @RequestParam String artistId,
+            Model model
+    ){
+        Song song=songService.findByTrackId(trackId);
+        Artist artist=artistService.ArtistfindById(Long.valueOf(artistId));
+        model.addAttribute("song",song);
+        model.addAttribute("artist",artist);
+        return "redirect:/songDetails?trackId=" + trackId + "&artistId=" + artistId;
     }
 }
-

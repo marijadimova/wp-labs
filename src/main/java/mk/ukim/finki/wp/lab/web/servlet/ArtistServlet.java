@@ -42,7 +42,7 @@ public class ArtistServlet extends HttpServlet {
         String artistId=req.getParameter("artistId");
         System.out.println(trackId);
         System.out.println(artistId);
-        resp.sendRedirect(req.getContextPath()+"/songDetails?trackId="+trackId+"&artistId="+artistId);
+        resp.sendRedirect(req.getContextPath()+"/songDetailss?trackId="+trackId+"&artistId="+artistId);
 
     }
 }

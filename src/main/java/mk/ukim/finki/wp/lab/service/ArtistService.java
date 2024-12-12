@@ -4,7 +4,7 @@ import mk.ukim.finki.wp.lab.model.Artist;
 
 import java.util.List;
 
-public interface ArtistService {
+public interface ArtistService{
     List<Artist> listArtists();
     Artist ArtistfindById(Long id);
 }

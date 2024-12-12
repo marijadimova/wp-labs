@@ -2,8 +2,7 @@ package mk.ukim.finki.wp.lab.service.impl;
 
 import mk.ukim.finki.wp.lab.model.Artist;
 import mk.ukim.finki.wp.lab.model.Song;
-import mk.ukim.finki.wp.lab.repository.ArtistRepository;
-import mk.ukim.finki.wp.lab.repository.SongRepository;
+import mk.ukim.finki.wp.lab.repository.jpa.SongRepositoryJPA;
 import mk.ukim.finki.wp.lab.service.SongService;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +10,10 @@ import java.util.List;
 
 @Service
 public class SongServiceImpl implements SongService {
-    private final SongRepository songRepository;
-    private final ArtistRepository artistRepository;
+    private final SongRepositoryJPA songRepository;
 
-    public SongServiceImpl(SongRepository songRepository, ArtistRepository artistRepository) {
+    public SongServiceImpl(SongRepositoryJPA songRepository) {
         this.songRepository = songRepository;
-        this.artistRepository = artistRepository;
     }
 
     @Override
@@ -24,22 +21,37 @@ public class SongServiceImpl implements SongService {
         return songRepository.findAll();
     }
 
-    @Override
-    public Artist addArtistToSong(Artist artist, Song song) {
-
-        if (!song.getPerformers().contains(artist)) {
-            song.getPerformers().add(artist);
-        }
-        return artist;
+    public void addArtistToSong(Artist artist, Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found"));
+        song.addArtist(artist);
+        songRepository.save(song);
     }
+
 
     @Override
     public Song findByTrackId(String trackId) {
         return songRepository.findByTrackId(trackId);
     }
 
-    public List<String> listGenres()
-    {
-        return songRepository.findAll().stream().map(song -> song.getGenre()).distinct().toList();
+    @Override
+    public Song findById(Long id) {
+        return songRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public List<Song> songsByAlbumId(Long id) {
+        return songRepository.findAllByAlbum_Id(id);
+    }
+
+    @Override
+    public void save(Song song) {
+        songRepository.save(song);
+    }
+
+    @Override
+    public void delete(Song song) {
+        songRepository.delete(song);
+    }
+
 }
